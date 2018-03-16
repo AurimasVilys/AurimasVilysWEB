@@ -20,81 +20,99 @@ ticketsDB = [
 def hello():
 	return 'You have connected to Tickets Stats'
 
+
+
 # GET information about current Tickets in JSON format
 @app.route('/tickets', methods=['GET'])
 def getCurrentTickets():
-	return jsonify({'Tickets':ticketsDB})
+	return jsonify(ticketsDB)
+
+# GET information about single Ticket in JSON format
+@app.route('/tickets/<ticketID>', methods=['GET'])
+def getSingleTicket(ticketID):
+	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+	return jsonify(ticket[0])
 
 # GET information about current Event Tickets in JSON format
 @app.route('/events/<eventID>/tickets', methods=['GET'])
 def getCurrentTicketsByEvent(eventID):
 	eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == eventID)]
-	return jsonify({'Tickets':eventTickets})
+	return jsonify(eventTickets)
+
+
 
 # PUT a barcode to the specific Ticket ID. Id provided by URL
-@app.route('/tickets/<ticketID>/barcode', methods=['PUT'])
+@app.route('/tickets/<ticketID>', methods=['PATCH'])
 def generateTicket(ticketID):
 	randomBarcode = random.randint(10000000,100000000)
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if(ticket[0]['Barcode'] == ''):
 		ticket[0]['Barcode']  = randomBarcode
-		return jsonify({'Ticket':ticket[0]})
+		return jsonify(ticket[0])
 	else:
 		return 'Error. Ticket has a barcode generated'
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
-@app.route('/events/<eventID>/tickets/barcode', methods=['PUT'])
+@app.route('/events/<eventID>/tickets', methods=['PATCH'])
 def generateEventTicket(eventID):
 	ticket = [tic for tic in ticketsDB if (tic['Event No'] == eventID)]
 	for eventsTic in ticket:
 		if(eventsTic['Barcode'] == ''):
 			randomBarcode = random.randint(100000,1000000)
 			eventsTic['Barcode']  = randomBarcode
-	return jsonify({'Tickets':ticket})
+	return jsonify(ticket)
+
+#PATCH update info (only Event No)
+@app.route('/tickets/<ticketID>', methods=['PUT'])
+def changeEvent(ticketID):
+	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+	ticket[0]['Event No'] = request.json['Event No']
+	ticket[0]['Current Zone'] = request.json['Current Zone']
+	return jsonify(ticket[0])
 
 #Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/tickets/in', methods=['PUT'])
-def scanIN():
+@app.route('/tickets/<ticketID>/in', methods=['PATCH'])
+def scanIN(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
-										   tic['id'] == request.json['id'])]
+										   tic['id'] == ticketID)]
 	if(ticket[0]['Current Zone'] == '0'):
 		ticket[0]['Current Zone'] = '1'
-		return jsonify({'Ticket':ticket[0]})
+		return jsonify(ticket[0])
 	else:
 		return 'Error. Ticket can not be scanned IN'
 
 #Scan ticket OUT, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/tickets/out', methods=['PUT'])
-def scanOUT():
+@app.route('/tickets/<ticketID>/out', methods=['PATCH'])
+def scanOUT(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
-										   tic['id'] == request.json['id'])]
+										   tic['id'] == ticketID)]
 	if(ticket[0]['Current Zone'] == '1'):
 		ticket[0]['Current Zone'] = '0'
-		return jsonify({'Ticket':ticket[0]})
+		return jsonify(ticket[0])
 	else:
 		return 'Error. Ticket can not be scanned OUT'
 
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
-@app.route('/tickets/new', methods = ['POST'])
+@app.route('/tickets', methods = ['POST'])
 def addTicket():
 	lastId = int(ticketsDB[len(ticketsDB)-1]['id']) + 1
 	ticket = {
-		'id': lastId,
+		'id': str(lastId),
 		'Barcode': '',
 		'Event No' :request.json['Event No'],
 		'Current Zone': '0'
 	}
 	ticketsDB.append(ticket)
-	return jsonify({'Ticket':ticket})
+	return jsonify(ticket)
 
 # DELETE - Remove ticket from the list.
 # Only when the barcode is not generated
-@app.route('/tickets/<ticketID>/remove', methods = ['DELETE'])
+@app.route('/tickets/<ticketID>', methods = ['DELETE'])
 def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (ticket[0]['Barcode'] == ''):
 		ticketsDB.remove(ticket[0])
-		return jsonify({'RemovedTicket':ticket[0]})
+		return jsonify(ticket[0])
 	else:
 		return 'Error. Ticket has a barcode generated and cannot be deleted'
 

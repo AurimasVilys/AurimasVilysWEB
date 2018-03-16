@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="55041b74-4b33-461c-a3fc-cf6500d62ae1" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
       <change beforePath="$PROJECT_DIR$/tickets_stat.py" afterPath="$PROJECT_DIR$/tickets_stat.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,8 +17,8 @@
       <file leaf-file-name="tickets_stat.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tickets_stat.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="283">
-              <caret line="99" column="31" lean-forward="false" selection-start-line="99" selection-start-column="31" selection-end-line="99" selection-end-column="31" />
+            <state relative-caret-position="248">
+              <caret line="71" column="41" lean-forward="true" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -39,7 +40,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-107" />
+    <option name="x" value="3" />
     <option name="y" value="22" />
     <option name="width" value="848" />
     <option name="height" value="877" />
@@ -111,7 +112,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-107" y="22" width="848" height="877" extended-state="0" />
+    <frame x="3" y="22" width="848" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.06603774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -168,8 +169,8 @@
     <entry file="file://$PROJECT_DIR$/dog_shelter.py" />
     <entry file="file://$PROJECT_DIR$/tickets_stat.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="283">
-          <caret line="99" column="31" lean-forward="false" selection-start-line="99" selection-start-column="31" selection-end-line="99" selection-end-column="31" />
+        <state relative-caret-position="248">
+          <caret line="71" column="41" lean-forward="true" selection-start-line="71" selection-start-column="41" selection-end-line="71" selection-end-column="41" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>

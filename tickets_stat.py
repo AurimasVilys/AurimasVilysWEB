@@ -72,28 +72,6 @@ def changeEvent(ticketID):
 		ticket[0]['Current Zone'] = request.json['Current Zone']
 	return jsonify(ticket[0])
 
-#Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/tickets/<ticketID>/in', methods=['PATCH'])
-def scanIN(ticketID):
-	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
-										   tic['id'] == ticketID)]
-	if(ticket[0]['Current Zone'] == '0'):
-		ticket[0]['Current Zone'] = '1'
-		return jsonify(ticket[0])
-	else:
-		return 'Error. Ticket can not be scanned IN'
-
-#Scan ticket OUT, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/tickets/<ticketID>/out', methods=['PATCH'])
-def scanOUT(ticketID):
-	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
-										   tic['id'] == ticketID)]
-	if(ticket[0]['Current Zone'] == '1'):
-		ticket[0]['Current Zone'] = '0'
-		return jsonify(ticket[0])
-	else:
-		return 'Error. Ticket can not be scanned OUT'
-
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
 @app.route('/tickets', methods = ['POST'])
 def addTicket():

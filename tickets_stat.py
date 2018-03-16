@@ -70,6 +70,8 @@ def changeEvent(ticketID):
 		ticket[0]['Event No'] = request.json['Event No']
 	if 'Current Zone' in request.json:
 		ticket[0]['Current Zone'] = request.json['Current Zone']
+	if 'Barcode' in request.json:
+		ticket[0]['Barcode'] = request.json['Barcode']
 	return jsonify(ticket[0])
 
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.

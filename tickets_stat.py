@@ -95,7 +95,6 @@ def scanOUT(ticketID):
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
 @app.route('/tickets', methods = ['POST'])
 def addTicket():
-	#lastId = int(ticketsDB[len(ticketsDB)-1]['id']) + 1
 	lastId = len(ticketsDB) + 1
 	ticket = {
 		'id': str(lastId),
@@ -104,7 +103,7 @@ def addTicket():
 		'Current Zone': '0'
 	}
 	ticketsDB.append(ticket)
-	return jsonify(ticket)
+	return jsonify(ticket), 201
 
 # DELETE - Remove ticket from the list.
 # Only when the barcode is not generated

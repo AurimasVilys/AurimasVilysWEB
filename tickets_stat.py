@@ -1,8 +1,10 @@
 from flask import Flask
 from flask import request
 from flask import jsonify
+from flask import abort
 
 import random
+
 
 app = Flask(__name__)
 
@@ -50,7 +52,7 @@ def generateTicket(ticketID):
 		ticket[0]['Barcode']  = randomBarcode
 		return jsonify(ticket[0])
 	else:
-		return 'Error. Ticket has a barcode generated'
+		return 'Error. Ticket has a barcode generated', 405
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
 @app.route('/events/<eventID>/tickets', methods=['PATCH'])
@@ -62,10 +64,12 @@ def generateEventTicket(eventID):
 			eventsTic['Barcode']  = randomBarcode
 	return jsonify(ticket)
 
-#PATCH update info (only Event No)
+#PUT update info (only Event No)
 @app.route('/tickets/<ticketID>', methods=['PUT'])
 def changeEvent(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+	if (len(ticket) == 0):
+		abort(404)
 	if 'Event No' in request.json:
 		ticket[0]['Event No'] = request.json['Event No']
 	if 'Current Zone' in request.json:
@@ -92,11 +96,13 @@ def addTicket():
 @app.route('/tickets/<ticketID>', methods = ['DELETE'])
 def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+	if (len(ticket) == 0):
+		abort(404)
 	if (ticket[0]['Barcode'] == ''):
 		ticketsDB.remove(ticket[0])
 		return jsonify(ticket[0]), 200
 	else:
-		return 'Error. Ticket has a barcode generated and cannot be deleted'
+		return 'Error. Ticket has a barcode generated and cannot be deleted', 405
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0')

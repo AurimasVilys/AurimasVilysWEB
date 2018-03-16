@@ -21,63 +21,63 @@ def hello():
 	return 'You have connected to Tickets Stats'
 
 # GET information about current Tickets in JSON format
-@app.route('/current', methods=['GET'])
+@app.route('/tickets', methods=['GET'])
 def getCurrentTickets():
 	return jsonify({'Current Tickets: ':ticketsDB})
 
 # GET information about current Event Tickets in JSON format
-@app.route('/current/<eventID>', methods=['GET'])
+@app.route('/event/<eventID>/tickets', methods=['GET'])
 def getCurrentTicketsByEvent(eventID):
 	eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == eventID)]
-	return jsonify({'Current Event Tickets: ':eventTickets})
+	return eventTickets
 
 
 # PUT a barcode to the specific Ticket ID. Id provided by URL
-@app.route('/generateTicket/<ticketID>', methods=['PUT'])
+@app.route('/tickets/<ticketID>/barcode', methods=['PUT'])
 def generateTicket(ticketID):
 	randomBarcode = random.randint(10000000,100000000)
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if(ticket[0]['Barcode'] == ''):
 		ticket[0]['Barcode']  = randomBarcode
-		return jsonify({'Ticket Generated': ticket[0]})
+		return ticket[0]
 	else:
-		return jsonify({'Ticket has generated barcode. The new barcode cannot be generated for Ticket ID': ticket[0]['id']})
+		return jsonify({'Response': 'Ticket has a barcode'})
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
-@app.route('/generateEventTickets/<EventID>', methods=['PUT'])
+@app.route('/events/<EventID>/tickets/barcode', methods=['PUT'])
 def generateEventTicket(EventID):
 	ticket = [tic for tic in ticketsDB if (tic['Event No'] == EventID)]
 	for eventsTic in ticket:
 		if(eventsTic['Barcode'] == ''):
 			randomBarcode = random.randint(100000,1000000)
 			eventsTic['Barcode']  = randomBarcode
-	return jsonify({'All Event tickets are  generated': ticket})
+	return ticket
 
 #Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/ScanIN', methods=['PUT'])
+@app.route('/tickets/in', methods=['PUT'])
 def scanIN():
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
 										   tic['id'] == request.json['id'])]
 	if(ticket[0]['Current Zone'] == '0'):
 		ticket[0]['Current Zone'] = '1'
-		return jsonify({'Ticket scaned IN': ticket[0]})
+		return ticket[0]
 	else:
-		return jsonify({'Ticket is already scaned IN': ticket[0]})
+		return jsonify({'Response': 'Ticket can not be scanned'})
 
 #Scan ticket OUT, parameters passed by JSON - ticket id - string, barcode - int
-@app.route('/ScanOUT', methods=['PUT'])
+@app.route('/tickets/out', methods=['PUT'])
 def scanOUT():
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
 										   tic['id'] == request.json['id'])]
 	if(ticket[0]['Current Zone'] == '1'):
 		ticket[0]['Current Zone'] = '0'
-		return jsonify({'Ticket scaned OUT': ticket[0]})
+		return ticket[0]
 	else:
-		return jsonify({'Ticket is already scaned OUT': ticket[0]})
+		return jsonify({'Response': 'Ticket can not be scanned'})
 
 
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
-@app.route('/addTicket', methods = ['POST'])
+@app.route('/tickets/new', methods = ['POST'])
 def addTicket():
 	lastId = int(ticketsDB[len(ticketsDB)-1]['id']) + 1
 	ticket = {
@@ -87,19 +87,19 @@ def addTicket():
 		'Current Zone': '0'
 	}
 	ticketsDB.append(ticket)
-	return jsonify({'New ticket added': ticket})
+	return ticket
 
 # DELETE - Remove ticket from the list.
 # Only when the barcode is not generated
-@app.route('/removeTicket/<ticketID>', methods = ['DELETE'])
+@app.route('/tickets/remove/<ticketID>', methods = ['DELETE'])
 def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (ticket[0]['Barcode'] == ''):
 		ticketsDB.remove(ticket[0])
-		return jsonify({'Ticket removed': ticket[0]})
+		return ticket[0]
 	else:
 		return jsonify(
-			{'Ticket has generated barcode. Cannot delete ticket with generated barcode': ticket[0]})
+			{'Response': 'Ticket is generated and can not be deleted'})
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0')

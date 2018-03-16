@@ -89,7 +89,7 @@ def addTicket():
 
 # DELETE - Remove ticket from the list.
 # Only when the barcode is not generated
-@app.route('/tickets/remove/<ticketID>', methods = ['DELETE'])
+@app.route('/tickets/<ticketID>/remove', methods = ['DELETE'])
 def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (ticket[0]['Barcode'] == ''):

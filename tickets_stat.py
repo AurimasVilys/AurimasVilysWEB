@@ -97,7 +97,7 @@ def scanOUT(ticketID):
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
 @app.route('/tickets', methods = ['POST'])
 def addTicket():
-	lastId = len(ticketsDB) + 1
+	lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
 	ticket = {
 		'id': str(lastId),
 		'Barcode': '',

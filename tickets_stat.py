@@ -20,7 +20,7 @@ ticketsDB = [
 def hello():
 	return 'You have connected to Tickets Stats'
 
-# GET information about current Tickęts in JSON format
+# GET information about current Tickets in JSON format
 @app.route('/current', methods=['GET'])
 def getCurrentTickets():
 	return jsonify({'Current Tickets: ':ticketsDB})
@@ -43,6 +43,7 @@ def generateTicket(ticketID):
 	else:
 		return jsonify({'Ticket has generated barcode. The new barcode cannot be generated for Ticket ID': ticket[0]['id']})
 
+#Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
 @app.route('/ScanIN', methods=['PUT'])
 def scanIN():
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
@@ -53,6 +54,7 @@ def scanIN():
 	else:
 		return jsonify({'Ticket is already scaned IN': ticket[0]})
 
+#Scan ticket OUT, parameters passed by JSON - ticket id - string, barcode - int
 @app.route('/ScanOUT', methods=['PUT'])
 def scanOUT():
 	ticket = [tic for tic in ticketsDB if (tic['Barcode'] == request.json['Barcode'] and
@@ -62,6 +64,7 @@ def scanOUT():
 		return jsonify({'Ticket scaned OUT': ticket[0]})
 	else:
 		return jsonify({'Ticket is already scaned OUT': ticket[0]})
+
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
 @app.route('/generateEventTickets/<EventID>', methods=['PUT'])

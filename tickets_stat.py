@@ -23,14 +23,13 @@ def hello():
 # GET information about current Tickets in JSON format
 @app.route('/tickets', methods=['GET'])
 def getCurrentTickets():
-	return jsonify({'Current Tickets: ':ticketsDB})
+	return jsonify({'Tickets':ticketsDB})
 
 # GET information about current Event Tickets in JSON format
-@app.route('/event/<eventID>/tickets', methods=['GET'])
+@app.route('/events/<eventID>/tickets', methods=['GET'])
 def getCurrentTicketsByEvent(eventID):
 	eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == eventID)]
-	return eventTickets
-
+	return jsonify({'Tickets':eventTickets})
 
 # PUT a barcode to the specific Ticket ID. Id provided by URL
 @app.route('/tickets/<ticketID>/barcode', methods=['PUT'])
@@ -39,9 +38,9 @@ def generateTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if(ticket[0]['Barcode'] == ''):
 		ticket[0]['Barcode']  = randomBarcode
-		return ticket[0]
+		return jsonify({'Ticket':ticket[0]})
 	else:
-		return jsonify({'Response': 'Ticket has a barcode'})
+		return 'Error. Ticket has a barcode generated'
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
 @app.route('/events/<EventID>/tickets/barcode', methods=['PUT'])
@@ -51,7 +50,7 @@ def generateEventTicket(EventID):
 		if(eventsTic['Barcode'] == ''):
 			randomBarcode = random.randint(100000,1000000)
 			eventsTic['Barcode']  = randomBarcode
-	return ticket
+	return jsonify({'Tickets':ticket})
 
 #Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
 @app.route('/tickets/in', methods=['PUT'])
@@ -60,9 +59,9 @@ def scanIN():
 										   tic['id'] == request.json['id'])]
 	if(ticket[0]['Current Zone'] == '0'):
 		ticket[0]['Current Zone'] = '1'
-		return ticket[0]
+		return jsonify({'Ticket':ticket[0]})
 	else:
-		return jsonify({'Response': 'Ticket can not be scanned'})
+		return 'Error. Ticket can not be scanned IN'
 
 #Scan ticket OUT, parameters passed by JSON - ticket id - string, barcode - int
 @app.route('/tickets/out', methods=['PUT'])
@@ -71,10 +70,9 @@ def scanOUT():
 										   tic['id'] == request.json['id'])]
 	if(ticket[0]['Current Zone'] == '1'):
 		ticket[0]['Current Zone'] = '0'
-		return ticket[0]
+		return jsonify({'Ticket':ticket[0]})
 	else:
-		return jsonify({'Response': 'Ticket can not be scanned'})
-
+		return 'Error. Ticket can not be scanned OUT'
 
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
 @app.route('/tickets/new', methods = ['POST'])
@@ -87,7 +85,7 @@ def addTicket():
 		'Current Zone': '0'
 	}
 	ticketsDB.append(ticket)
-	return ticket
+	return jsonify({'Ticket':ticket})
 
 # DELETE - Remove ticket from the list.
 # Only when the barcode is not generated
@@ -96,10 +94,9 @@ def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (ticket[0]['Barcode'] == ''):
 		ticketsDB.remove(ticket[0])
-		return ticket[0]
+		return jsonify({'RemovedTicket':ticket[0]})
 	else:
-		return jsonify(
-			{'Response': 'Ticket is generated and can not be deleted'})
+		return 'Error. Ticket has a barcode generated and cannot be deleted'
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0')

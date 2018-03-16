@@ -10,7 +10,7 @@ To build and run:
 
 Port 5000 is used for this service.
 
-###Queries:
+### Queries:
 1. Get all tickets -> http://localhost:5000/current
 2. Get all tickets for specific event -> http://localhost:5000/current/<Event_Id>
 3. Generate ticket -> http://localhost:5000/generateTicket/<Ticket_id>

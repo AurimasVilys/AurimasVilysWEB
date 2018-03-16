@@ -43,6 +43,16 @@ def generateTicket(ticketID):
 	else:
 		return jsonify({'Ticket has generated barcode. The new barcode cannot be generated for Ticket ID': ticket[0]['id']})
 
+# PUT a barcode to specific Event Tickets. Event Id provided by URL
+@app.route('/generateEventTickets/<EventID>', methods=['PUT'])
+def generateEventTicket(EventID):
+	ticket = [tic for tic in ticketsDB if (tic['Event No'] == EventID)]
+	for eventsTic in ticket:
+		if(eventsTic['Barcode'] == ''):
+			randomBarcode = random.randint(100000,1000000)
+			eventsTic['Barcode']  = randomBarcode
+	return jsonify({'All Event tickets are  generated': ticket})
+
 #Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
 @app.route('/ScanIN', methods=['PUT'])
 def scanIN():
@@ -64,17 +74,6 @@ def scanOUT():
 		return jsonify({'Ticket scaned OUT': ticket[0]})
 	else:
 		return jsonify({'Ticket is already scaned OUT': ticket[0]})
-
-
-# PUT a barcode to specific Event Tickets. Event Id provided by URL
-@app.route('/generateEventTickets/<EventID>', methods=['PUT'])
-def generateEventTicket(EventID):
-	ticket = [tic for tic in ticketsDB if (tic['Event No'] == EventID)]
-	for eventsTic in ticket:
-		if(eventsTic['Barcode'] == ''):
-			randomBarcode = random.randint(100000,1000000)
-			eventsTic['Barcode']  = randomBarcode
-	return jsonify({'All Event tickets are  generated': ticket})
 
 
 # POST - Add ne Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.

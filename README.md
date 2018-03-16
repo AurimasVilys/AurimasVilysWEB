@@ -12,12 +12,12 @@ Port 5000 is used for this service.
 
 ### Queries:
 1. [GET] Get all tickets -> http://localhost:5000/tickets
-2. [GET] Get single ticket info -> http://localhost:5000/tickets/1
+2. [GET] Get single ticket info -> http://localhost:5000/tickets/<Ticket_ID>
 2. [GET] Get all tickets for specific event -> http://localhost:5000/events/<Event_Id>/tickets
-3. [PATCH] Generate ticket -> http://localhost:5000/tickets/<Ticket_id>
-4. [PATCH] Generate all tickets for specific event -> http://localhost:5000/events/<Event_id>/tickets
-5. [PUT] Change ticket info (Only "Event No" and "Current zone") -> http://localhost:5000/tickets/<ticketID>
-6. [PATCH] Scan ticket in -> http://localhost:5000/tickets/in (Parameters passed by JSON. "id": string, "Barcode": number)
-7. [PATCH] Scan ticket out -> http://localhost:5000/tickets/out (Parameters passed by JSON. "id": string, "Barcode": number)
+3. [PATCH] Generate barcode -> http://localhost:5000/tickets/<Ticket_id>
+4. [PATCH] Generate all tickets barcode for specific event -> http://localhost:5000/events/<Event_id>/tickets
+5. [PUT] Change ticket info (Only "Event No" and "Current zone". Parameter Passed by JSON ("Event No": string, "Current Zone": string)) -> http://localhost:5000/tickets/<ticketID>
+6. [PATCH] Scan ticket in -> http://localhost:5000/tickets/<Ticket_ID>/in (Parameters passed by JSON.Barcode": number)
+7. [PATCH] Scan ticket out -> http://localhost:5000/tickets/<Ticket_ID>/out (Parameters passed by JSON. Barcode": number)
 8. [POST] Add ticket to the event -> http://localhost:5000/tickets (Parameters passed by JSON. "Event No": string)
 9. [DELETE] Remove ticket http://localhost:5000/tickets/<ticketID>

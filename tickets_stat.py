@@ -66,7 +66,7 @@ def generateEventTicket(eventID):
 @app.route('/tickets/<ticketID>', methods=['PUT'])
 def changeEvent(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	ticket[0]['Event No'] = request.json['Event No']
+	ticket[0]['Event No'] = request.json['Event No'] 
 	ticket[0]['Current Zone'] = request.json['Current Zone']
 	return jsonify(ticket[0])
 

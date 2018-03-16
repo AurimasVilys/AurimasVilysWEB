@@ -66,8 +66,10 @@ def generateEventTicket(eventID):
 @app.route('/tickets/<ticketID>', methods=['PUT'])
 def changeEvent(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	ticket[0]['Event No'] = request.json['Event No'] 
-	ticket[0]['Current Zone'] = request.json['Current Zone']
+	if 'Event No' in request.json:
+		ticket[0]['Event No'] = request.json['Event No']
+	if 'Current Zone' in request.json:
+		ticket[0]['Current Zone'] = request.json['Current Zone']
 	return jsonify(ticket[0])
 
 #Scan ticket IN, parameters passed by JSON - ticket id - string, barcode - int
@@ -112,7 +114,7 @@ def deleteTicket(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (ticket[0]['Barcode'] == ''):
 		ticketsDB.remove(ticket[0])
-		return jsonify(ticket[0])
+		return jsonify(ticket[0]), 200
 	else:
 		return 'Error. Ticket has a barcode generated and cannot be deleted'
 

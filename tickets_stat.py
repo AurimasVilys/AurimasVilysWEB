@@ -43,9 +43,9 @@ def generateTicket(ticketID):
 		return 'Error. Ticket has a barcode generated'
 
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
-@app.route('/events/<EventID>/tickets/barcode', methods=['PUT'])
-def generateEventTicket(EventID):
-	ticket = [tic for tic in ticketsDB if (tic['Event No'] == EventID)]
+@app.route('/events/<eventID>/tickets/barcode', methods=['PUT'])
+def generateEventTicket(eventID):
+	ticket = [tic for tic in ticketsDB if (tic['Event No'] == eventID)]
 	for eventsTic in ticket:
 		if(eventsTic['Barcode'] == ''):
 			randomBarcode = random.randint(100000,1000000)

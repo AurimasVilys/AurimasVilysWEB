@@ -2,21 +2,20 @@ version: '2'
 
 services:
 
-  web:
+  service:
+    build: ./WS-movies
+    command: python ./WS-movies/app.py runserver 0.0.0.0:81
+    ports:
+      - "81:5000"
+    volumes:
+      - .:/code
+
+  tickets:
     build: .
     command: python3 tickets_stat.py
     ports:
       - "5000:5000"
     volumes:
       - .:/code
-
-  web2:
-    build: ./WS-movies
-    command: python ./WS-movies/app.py
-    ports:
-      - "81:5000"
-    volumes:
-      - .:/code
-    depends_on:
-      - web
-
+    links:
+      - service

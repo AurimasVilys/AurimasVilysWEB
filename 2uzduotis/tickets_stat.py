@@ -112,7 +112,7 @@ def deleteTicket(ticketID):
 # GET info about all events(movies)
 @app.route('/events', methods=['GET'])
 def getEvents():
-	r = requests.get('http://172.18.0.1:81/movies')
+	r = requests.get('http://service:81/movies')
 	return r.text
 
 # POST - Add selected amount of tickets to the selected event. 
@@ -126,7 +126,7 @@ def addTicketToEvent():
 	if(numberOfTickets < 1):
 		return 'Error. TicNumber not provided or is invalid', 405
 	requestData = {'title' : filmTitle}
-	r = requests.get('http://172.18.0.1:81/movies', params=requestData)
+	r = requests.get('http://service:81/movies', params=requestData)
 	eventID = r.json()
 	for i in range(0,numberOfTickets):
 		lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
@@ -155,7 +155,7 @@ def addRatingToEvent():
 		"Rating": request.json['Rating']
 	}
 	print (data['Rating'])
-	url = 'http://172.18.0.1:81/movies'
+	url = 'http://service:81/movies'
 	r = requests.patch('{}/{}'.format(url, ticket[0]['Event No']), json=data)
 	if(r.status_code==200):
 		ticket[0]['Rated'] = "1"
@@ -164,4 +164,4 @@ def addRatingToEvent():
 
 
 if __name__ == "__main__":
-	app.run(debug=True, host='0.0.0.0', threaded=True)
+	app.run(debug=True, host='0.0.0.0', port=5000)

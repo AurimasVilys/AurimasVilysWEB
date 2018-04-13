@@ -26,3 +26,14 @@ Used ports are 5000 and 81
 2. [POST] Create tickets for event ('Title' (string) and 'TicNUmber' (number) passed by JSON ) -> http://localhost:5000/events/tickets
 3. [PATCH] Rate film  ('Ticket ID' and 'Rating' passed by JSON (both strings))-> http://localhost:5000/events/rate
 
+###JSON EXAMPLES
+1. For creating event tickets:
+{
+	"Title": "Alpha",
+	"TicNumber": 100
+}
+2. For rating movie:
+{
+	"Ticket ID": "44",
+	"Rating": "9"
+}

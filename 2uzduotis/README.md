@@ -23,6 +23,6 @@ Used ports are 5000 and 81
 
 ### Queries 2ND TASK:
 1. [GET] Get all events -> http://localhost:5000/events
-1. [POST] Create tickets for event -> http://localhost:5000/events/tickets
-1. [PATCH] Rate film -> http://localhost:5000/events/rate
+2. [POST] Create tickets for event ('Title' (string) and 'TicNUmber' (number) passed by JSON ) -> http://localhost:5000/events/tickets
+3. [PATCH] Rate film  ('Ticket ID' and 'Rating' passed by JSON (both strings))-> http://localhost:5000/events/rate
 

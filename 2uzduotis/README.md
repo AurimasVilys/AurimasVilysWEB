@@ -19,7 +19,7 @@ Used ports are 5000 and 81
 4. [PATCH] Generate all tickets barcode for specific event -> http://localhost:5000/events/<Event_id>/tickets
 5. [PUT] Change ticket info (Only "Event No" and "Current zone". Parameter Passed by JSON ("Event No": string, "Current Zone": string)) -> http://localhost:5000/tickets/<Ticket_id>
 6. [POST] Add ticket to the event -> http://localhost:5000/tickets (Parameters passed by JSON. "Event No": string)
-7. [DELETE] Remove ticket http://localhost:5000/events/<Ticket_id>
+7. [DELETE] Remove ticket http://localhost:5000/tickets/<Ticket_id>
 
 ### Queries 2ND TASK:
 1. [GET] Get all events -> http://localhost:5000/events

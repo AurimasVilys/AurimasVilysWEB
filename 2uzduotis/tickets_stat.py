@@ -51,9 +51,9 @@ def getCurrentTickets():
 @app.route('/tickets/<ticketID>', methods=['GET'])
 def getSingleTicket(ticketID):
 	if(request.args.get('embedded', '') == "events"):
-		ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 		try:
-			copy_tickets = copy.deepcopy(ticket[0])
+			ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+			copy_tickets = copy.deepcopy(ticket)
 			url = 'http://service:81/movies'
 			movies = []
 			for EID in copy_tickets[0]['EID']:

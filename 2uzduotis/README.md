@@ -22,6 +22,7 @@ Used ports are 5000 and 81
 7. [DELETE] Remove ticket http://localhost:5000/tickets/<Ticket_id>
 
 ### Queries 2ND TASK:
+0. [GET] Get all tickets with events (Embeded parameter) -> http://localhost:5000/tickets?embedded=events
 1. [GET] Get all events -> http://localhost:5000/events
 2. [POST] Create tickets for event ('Title' (string) and 'TicNumber' (number) passed by JSON ) -> http://localhost:5000/events/tickets
 3. [POST] Create new film and tickets using embeded parameter "movie". TicNumber, and Movie(Title,Release date, Rating, Genre) passed by JSON -> localhost:5000/events/tickets?embedded=movie

@@ -11,13 +11,13 @@ import random
 app = Flask(__name__)
 
 ticketsDB = [
-	{'id' : '1', 'Barcode' : '78355256', 'Event No' : '3', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '2', 'Barcode' : '', 'Event No' : '5', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '3', 'Barcode' : '', 'Event No' : '1', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '4', 'Barcode' : '', 'Event No' : '6', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '5', 'Barcode' : '', 'Event No' : '3', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '6', 'Barcode' : '', 'Event No' : '2', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '7', 'Barcode' : '', 'Event No' : '2', 'Current Zone' : '0', 'Rated': '0'}
+	{'id' : '1', 'Barcode' : '78355256', 'EID' : '3', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '2', 'Barcode' : '', 'EID' : '5', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '3', 'Barcode' : '', 'EID' : '1', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '4', 'Barcode' : '', 'EID' : '6', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '5', 'Barcode' : '', 'EID' : '3', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '6', 'Barcode' : '', 'EID' : '2', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '7', 'Barcode' : '', 'EID' : '2', 'Current Zone' : '0', 'Rated': '0'}
 ]
 
 @app.route('/')
@@ -29,7 +29,23 @@ def hello():
 # GET information about current Tickets in JSON format
 @app.route('/tickets', methods=['GET'])
 def getCurrentTickets():
-	return jsonify(ticketsDB)
+	if(request.args.get('embedded', '') == "events"):
+		try:
+			copy_tickets = copy.deepcopy(ticketsDB)
+			url = 'http://service:81/movies'
+			movies = []
+			for i in range(0, len(ticketsDB)):
+				r = requests.get('{}/{}'.format(url, ticketsDB[i]['EID']))
+				r = json.loads(r.text)
+				movies.append(r)
+				copy_tickets[i]['Event'] = []
+				copy_tickets[i]['Event'].append(movies[i])
+			return jsonify(copy_tickets)
+		except requests.RequestException as e:
+			print(e)
+			return str(e), 503
+	else:	
+		return jsonify(ticketsDB)
 
 # GET information about single Ticket in JSON format
 @app.route('/tickets/<ticketID>', methods=['GET'])
@@ -40,7 +56,7 @@ def getSingleTicket(ticketID):
 # GET information about current Event Tickets in JSON format
 @app.route('/events/<eventID>/tickets', methods=['GET'])
 def getCurrentTicketsByEvent(eventID):
-	eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == eventID)]
+	eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == eventID)]
 	return jsonify(eventTickets)
 
 
@@ -58,21 +74,21 @@ def generateTicket(ticketID):
 # PUT a barcode to specific Event Tickets. Event Id provided by URL
 @app.route('/events/<eventID>/tickets', methods=['PATCH'])
 def generateEventTicket(eventID):
-	ticket = [tic for tic in ticketsDB if (tic['Event No'] == eventID)]
+	ticket = [tic for tic in ticketsDB if (tic['EID'] == eventID)]
 	for eventsTic in ticket:
 		if(eventsTic['Barcode'] == ''):
 			randomBarcode = random.randint(100000,1000000)
 			eventsTic['Barcode']  = randomBarcode
 	return jsonify(ticket)
 
-#PUT update info (only Event No)
+#PUT update info (only EID)
 @app.route('/tickets/<ticketID>', methods=['PUT'])
 def changeEvent(ticketID):
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	if (len(ticket) == 0):
 		abort(404)
-	if 'Event No' in request.json:
-		ticket[0]['Event No'] = request.json['Event No']
+	if 'EID' in request.json:
+		ticket[0]['EID'] = request.json['EID']
 	if 'Current Zone' in request.json:
 		ticket[0]['Current Zone'] = request.json['Current Zone']
 	if 'Barcode' in request.json:
@@ -86,7 +102,7 @@ def addTicket():
 	ticket = {
 		'id': str(lastId),
 		'Barcode': '',
-		'Event No' :request.json['Event No'],
+		'EID' :request.json['EID'],
 		'Current Zone': '0',
 		'Rated': '0'
 	}
@@ -111,52 +127,62 @@ def deleteTicket(ticketID):
 # GET info about all events(movies)
 @app.route('/events', methods=['GET'])
 def getEvents():
-	r = requests.get('http://service:81/movies')
-	return r.text
+	try:
+		r = requests.get('http://service:81/movies')
+		return r.text
+	except requests.RequestException as e:
+		print(e)
+		return str(e), 503
+	return jsonify(404)
 
 # POST - Add selected amount of tickets to the selected event. 
 #Amount of tickets, event(film) id passed by JSON. String and int
 @app.route('/events/tickets', methods = ['POST'])
 def addTicketToEvent():
-	if(request.args.get('embedded', '') == "movie"):
-		movie = request.json['Movie']
-		numberOfTickets = request.json['TicNumber']
-		r = requests.post('http://service:81/movies', json = {"Title" : movie['Title'], "Release date" : movie['Release_date'], "Rating" : movie['Rating'], "Genre" : movie['Genre']})
-		r = json.loads(r.text)
-		for i in range(0,numberOfTickets):
-			lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
-			ticket = {
-				'id': str(lastId),
-				'Barcode': '',
-				'Event No' : r['ID'],
-				'Current Zone': '0',
-				'Rated': '0'
-			}
-			ticketsDB.append(ticket)
-		eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == r['ID'])]
-		return jsonify(eventTickets), 201
-	else:
-		filmTitle = request.json['Title']
-		if(len(filmTitle) == 0):
-			return 'Error. Title not provided or is invalid', 405
-		numberOfTickets = request.json['TicNumber']
-		if(numberOfTickets < 1):
-			return 'Error. TicNumber not provided or is invalid', 405
-		requestData = {'title' : filmTitle}
-		r = requests.get('http://service:81/movies', params=requestData)
-		eventID = r.json()
-		for i in range(0,numberOfTickets):
-			lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
-			ticket = {
-				'id': str(lastId),
-				'Barcode': '',
-				'Event No' : eventID[0]['ID'],
-				'Current Zone': '0',
-				'Rated': '0'
-			}
-			ticketsDB.append(ticket)
-		eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == str(eventID[0]['ID']))]
-		return jsonify(eventTickets), 201
+	try:
+		if(request.args.get('embedded', '') == "movie"):
+			movie = request.json['Movie']
+			numberOfTickets = request.json['TicNumber']
+			r = requests.post('http://service:81/movies', json = {"Title" : movie['Title'], "Release date" : movie['Release_date'], "Rating" : movie['Rating'], "Genre" : movie['Genre']})
+			r = json.loads(r.text)
+			for i in range(0,numberOfTickets):
+				lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
+				ticket = {
+					'id': str(lastId),
+					'Barcode': '',
+					'EID' : r['ID'],
+					'Current Zone': '0',
+					'Rated': '0'
+				}
+				ticketsDB.append(ticket)
+			eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == r['ID'])]
+			return jsonify(eventTickets), 201
+		else:
+			filmTitle = request.json['Title']
+			if(len(filmTitle) == 0):
+				return 'Error. Title not provided or is invalid', 405
+			numberOfTickets = request.json['TicNumber']
+			if(numberOfTickets < 1):
+				return 'Error. TicNumber not provided or is invalid', 405
+			requestData = {'title' : filmTitle}
+			r = requests.get('http://service:81/movies', params=requestData)
+			eventID = r.json()
+			for i in range(0,numberOfTickets):
+				lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
+				ticket = {
+					'id': str(lastId),
+					'Barcode': '',
+					'EID' : eventID[0]['ID'],
+					'Current Zone': '0',
+					'Rated': '0'
+				}
+				ticketsDB.append(ticket)
+			eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == str(eventID[0]['ID']))]
+			return jsonify(eventTickets), 201
+	except requests.RequestException as e:
+		print(e)
+		return str(e), 503
+	return jsonify(404)
 
 # PATCH. Rate film using TicketID. TicketID and Rating passed by json (both as strings)
 @app.route('/events/rates', methods = ['PATCH'])
@@ -171,7 +197,7 @@ def addRatingToEvent():
 		"Rating": request.json['Rating']
 	}
 	url = 'http://service:81/movies'
-	r = requests.patch('{}/{}'.format(url, ticket[0]['Event No']), json=data)
+	r = requests.patch('{}/{}'.format(url, ticket[0]['EID']), json=data)
 	if(r.status_code==200):
 		ticket[0]['Rated'] = "1"
 		return r.text, 200

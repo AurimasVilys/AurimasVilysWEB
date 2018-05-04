@@ -39,7 +39,7 @@ Used ports are 5000 and 81
 	"Movie": {"Title": "Venom", "Release_date": "2018", "Rating": "Not Rated", "Genre": "Horror"}
 }
 3. For rating movie:
-{
-	"Ticket ID": "44",
+{ 
+	"Ticket ID": "1",
 	"Rating": "9"
 }

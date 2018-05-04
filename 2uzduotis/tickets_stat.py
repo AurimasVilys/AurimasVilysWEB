@@ -11,7 +11,7 @@ import random
 app = Flask(__name__)
 
 ticketsDB = [
-	{'id' : '1', 'Barcode' : '', 'Event No' : '3', 'Current Zone' : '0', 'Rated': '0'},
+	{'id' : '1', 'Barcode' : '78355256', 'Event No' : '3', 'Current Zone' : '0', 'Rated': '0'},
 	{'id' : '2', 'Barcode' : '', 'Event No' : '5', 'Current Zone' : '0', 'Rated': '0'},
 	{'id' : '3', 'Barcode' : '', 'Event No' : '1', 'Current Zone' : '0', 'Rated': '0'},
 	{'id' : '4', 'Barcode' : '', 'Event No' : '6', 'Current Zone' : '0', 'Rated': '0'},
@@ -170,7 +170,6 @@ def addRatingToEvent():
 	data = {
 		"Rating": request.json['Rating']
 	}
-	print (data['Rating'])
 	url = 'http://service:81/movies'
 	r = requests.patch('{}/{}'.format(url, ticket[0]['Event No']), json=data)
 	if(r.status_code==200):

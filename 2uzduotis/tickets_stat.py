@@ -159,7 +159,7 @@ def addTicketToEvent():
 		return jsonify(eventTickets), 201
 
 # PATCH. Rate film using TicketID. TicketID and Rating passed by json (both as strings)
-@app.route('/events/rate', methods = ['PATCH'])
+@app.route('/events/rates', methods = ['PATCH'])
 def addRatingToEvent():
 	ticketID = request.json['Ticket ID']
 	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]

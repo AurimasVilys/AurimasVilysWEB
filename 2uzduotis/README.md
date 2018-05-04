@@ -25,7 +25,7 @@ Used ports are 5000 and 81
 1. [GET] Get all events -> http://localhost:5000/events
 2. [POST] Create tickets for event ('Title' (string) and 'TicNumber' (number) passed by JSON ) -> http://localhost:5000/events/tickets
 3. [POST] Create new film and tickets using embeded parameter "movie". TicNumber, and Movie(Title,Release date, Rating, Genre) passed by JSON -> localhost:5000/events/tickets?embedded=movie
-4. [PATCH] Rate film  ('Ticket ID' and 'Rating' passed by JSON (both strings))-> http://localhost:5000/events/rate
+4. [PATCH] Rate film  ('Ticket ID' and 'Rating' passed by JSON (both strings))-> http://localhost:5000/events/rates
 
 ### JSON EXAMPLES
 1. For creating event tickets:

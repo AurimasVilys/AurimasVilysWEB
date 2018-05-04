@@ -2,11 +2,10 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from flask import abort
-from faker import Faker
-
 import requests
 import json
 import os
+import copy
 import random
 
 app = Flask(__name__)
@@ -119,30 +118,47 @@ def getEvents():
 #Amount of tickets, event(film) id passed by JSON. String and int
 @app.route('/events/tickets', methods = ['POST'])
 def addTicketToEvent():
-	filmTitle = request.json['Title']
-	if(len(filmTitle) == 0):
-		return 'Error. Title not provided or is invalid', 405
-	numberOfTickets = request.json['TicNumber']
-	if(numberOfTickets < 1):
-		return 'Error. TicNumber not provided or is invalid', 405
-	requestData = {'title' : filmTitle}
-	r = requests.get('http://service:81/movies', params=requestData)
-	eventID = r.json()
-	for i in range(0,numberOfTickets):
-		lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
-		ticket = {
-			'id': str(lastId),
-			'Barcode': '',
-			'Event No' : eventID[0]['ID'],
-			'Current Zone': '0',
-			'Rated': '0'
-		}
-		ticketsDB.append(ticket)
-	eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == str(eventID[0]['ID']))]
-	return jsonify(eventTickets), 201
+	if(request.args.get('embedded', '') == "movie"):
+		movie = request.json['Movie']
+		numberOfTickets = request.json['TicNumber']
+		r = requests.post('http://service:81/movies', json = {"Title" : movie['Title'], "Release date" : movie['Release_date'], "Rating" : movie['Rating'], "Genre" : movie['Genre']})
+		r = json.loads(r.text)
+		for i in range(0,numberOfTickets):
+			lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
+			ticket = {
+				'id': str(lastId),
+				'Barcode': '',
+				'Event No' : r['ID'],
+				'Current Zone': '0',
+				'Rated': '0'
+			}
+			ticketsDB.append(ticket)
+		eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == r['ID'])]
+		return jsonify(eventTickets), 201
+	else:
+		filmTitle = request.json['Title']
+		if(len(filmTitle) == 0):
+			return 'Error. Title not provided or is invalid', 405
+		numberOfTickets = request.json['TicNumber']
+		if(numberOfTickets < 1):
+			return 'Error. TicNumber not provided or is invalid', 405
+		requestData = {'title' : filmTitle}
+		r = requests.get('http://service:81/movies', params=requestData)
+		eventID = r.json()
+		for i in range(0,numberOfTickets):
+			lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
+			ticket = {
+				'id': str(lastId),
+				'Barcode': '',
+				'Event No' : eventID[0]['ID'],
+				'Current Zone': '0',
+				'Rated': '0'
+			}
+			ticketsDB.append(ticket)
+		eventTickets = [ tic for tic in ticketsDB if (tic['Event No'] == str(eventID[0]['ID']))]
+		return jsonify(eventTickets), 201
 
-# POST - Add selected amount of tickets to the selected event. 
-#Ticket ID, Ratinf id passed by JSON. Both String
+# PATCH. Rate film using TicketID. TicketID and Rating passed by json (both as strings)
 @app.route('/events/rate', methods = ['PATCH'])
 def addRatingToEvent():
 	ticketID = request.json['Ticket ID']

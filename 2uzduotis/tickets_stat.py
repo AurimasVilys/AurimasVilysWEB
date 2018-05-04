@@ -50,7 +50,24 @@ def getCurrentTickets():
 # GET information about single Ticket in JSON format
 @app.route('/tickets/<ticketID>', methods=['GET'])
 def getSingleTicket(ticketID):
-	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+	if(request.args.get('embedded', '') == "events"):
+		ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+		try:
+			copy_tickets = copy.deepcopy(ticket[0])
+			url = 'http://service:81/movies'
+			movies = []
+			for EID in copy_tickets[0]['EID']:
+				r = requests.get('{}/{}'.format(url, EID))
+				r = json.loads(r.text)
+				movies.append(r)
+			copy_tickets[0]['Event'] = []
+			copy_tickets[0]['Event'].append(movies)
+			return jsonify(copy_tickets)
+		except requests.RequestException as e:
+			print(e)
+			return str(e), 503
+	else:
+		ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	return jsonify(ticket[0])
 
 # GET information about current Event Tickets in JSON format

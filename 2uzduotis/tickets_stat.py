@@ -42,8 +42,10 @@ def getCurrentTickets():
 				copy_tickets[i]['Event'].append(movies[i])
 			return jsonify(copy_tickets)
 		except requests.RequestException as e:
-			print(e)
-			return str(e), 503
+			copy_tickets = copy.deepcopy(ticketsDB)
+			for i in range(0, len(ticketsDB)):
+				copy_tickets[i]['Event'] = []
+			return jsonify(copy_tickets)
 	else:	
 		return jsonify(ticketsDB)
 
@@ -64,8 +66,10 @@ def getSingleTicket(ticketID):
 			copy_tickets[0]['Event'].append(movies)
 			return jsonify(copy_tickets)
 		except requests.RequestException as e:
-			print(e)
-			return str(e), 503
+			copy_tickets = copy.deepcopy(ticketsDB)
+			for i in range(0, len(ticketsDB)):
+				copy_tickets[i]['Event'] = []
+			return jsonify(copy_tickets)
 	else:
 		ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
 	return jsonify(ticket[0])

@@ -15,7 +15,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
 
 ### Queries 3RD TASK:
 
-00. Add Tickets to Event
+0. Add Tickets to Event
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>
@@ -26,7 +26,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
    </soapenv:Body>
 </soapenv:Envelope>
 
-00. Get information about ticket
+0. Get information about ticket
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>
@@ -36,7 +36,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
    </soapenv:Body>
 </soapenv:Envelope>
 
-00. Rate event (film) by Ticket ID
+0. Rate event (film) by Ticket ID
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>
@@ -47,7 +47,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
    </soapenv:Body>
 </soapenv:Envelope>
 
-00. Generate barcode for ticket
+0. Generate barcode for ticket
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>
@@ -57,7 +57,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
    </soapenv:Body>
 </soapenv:Envelope>
 
-00. Delete ticket
+0. Delete ticket
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>
@@ -68,7 +68,7 @@ URL: http://localhost:5000/soap/tickets?wsdl
    </soapenv:Body>
 </soapenv:Envelope>
 
-00. Change information about ticket
+0. Change information about ticket
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
    <soapenv:Header/>
    <soapenv:Body>

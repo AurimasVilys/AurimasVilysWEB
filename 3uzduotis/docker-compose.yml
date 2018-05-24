@@ -12,7 +12,7 @@ services:
 
   tickets:
     build: .
-    command: python3 tickets_stat.py
+    command: python tickets_stat.py
     ports:
       - "5000:5000"
     volumes:

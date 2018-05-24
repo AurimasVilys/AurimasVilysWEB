@@ -1,3 +1,5 @@
 flask
 requests
-faker
+flask-spyne
+soaplib
+suds

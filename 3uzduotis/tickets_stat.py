@@ -2,6 +2,10 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from flask import abort
+from flask_spyne import Spyne
+from spyne.protocol.soap import Soap11
+from spyne.model.primitive import Unicode, Integer
+from spyne.model.complex import Iterable, Array, ComplexModel
 import requests
 import json
 import os
@@ -9,221 +13,195 @@ import copy
 import random
 
 app = Flask(__name__)
+spyne = Spyne(app)
 
 ticketsDB = [
-	{'id' : '1', 'Barcode' : '78355256', 'EID' : '3', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '2', 'Barcode' : '', 'EID' : '5', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '3', 'Barcode' : '', 'EID' : '1', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '4', 'Barcode' : '', 'EID' : '6', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '5', 'Barcode' : '', 'EID' : '3', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '6', 'Barcode' : '', 'EID' : '2', 'Current Zone' : '0', 'Rated': '0'},
-	{'id' : '7', 'Barcode' : '', 'EID' : '2', 'Current Zone' : '0', 'Rated': '0'}
+	{'ID' : '1', 'Barcode' : '78355256', 'EID' : '3', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '2', 'Barcode' : '', 'EID' : '5', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '3', 'Barcode' : '', 'EID' : '1', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '4', 'Barcode' : '', 'EID' : '6', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '5', 'Barcode' : '', 'EID' : '3', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '6', 'Barcode' : '', 'EID' : '2', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '7', 'Barcode' : '', 'EID' : '2', 'Current_Zone' : '0', 'Rated': '0'}
 ]
 
-@app.route('/')
-def hello():
-	return 'Connected'
+class DefaultMessage(ComplexModel):
+	Message = Unicode
 
-# 1ST TASK
+class Movie(ComplexModel):
+	ID = Unicode
+	Title = Unicode
+	Release_date = Unicode
+	Rating = Unicode
+	Genre = Unicode
 
-# GET information about current Tickets in JSON format
-@app.route('/tickets', methods=['GET'])
-def getCurrentTickets():
-	if(request.args.get('embedded', '') == "events"):
+class Ticket(ComplexModel):
+	ID = Unicode
+	Barcode = Unicode
+	EID = Unicode
+	Event = Movie
+	Current_Zone = Unicode
+	Rated = Unicode
+
+class Tickets(ComplexModel):
+	tickets = Array(Ticket)
+
+class TicketsService(spyne.Service):
+	__soap_target_namespace__ = 'MyNS'
+	__soap_server_address__ = '/soap/tickets'
+	__service_url_path__ = '/soap/tickets'
+	__in_protocol__ = Soap11(validator='lxml')
+	__out_protocol__ = Soap11()
+
+	@spyne.srpc(Unicode(default='Welcome'),_returns=DefaultMessage)
+	def ConnectedString(str):
+		if(len(str) == 0):
+			return DefaultMessage(Message='Connected')
+		else:
+			return DefaultMessage(Message=str)
+
+	@spyne.srpc(_returns=Array(Ticket))
+	def getTickets():
+		m = []
 		try:
 			copy_tickets = copy.deepcopy(ticketsDB)
 			url = 'http://service:81/movies'
-			movies = []
 			for i in range(0, len(ticketsDB)):
 				r = requests.get('{}/{}'.format(url, ticketsDB[i]['EID']))
-				r = json.loads(r.text)
-				movies.append(r)
-				copy_tickets[i]['Event'] = []
-				copy_tickets[i]['Event'].append(movies[i])
-			return jsonify(copy_tickets)
+				Event = json.loads(r.text)
+				m.append(Ticket(ID=ticketsDB[i]["ID"], Barcode=ticketsDB[i]["Barcode"], EID=ticketsDB[i]["EID"], 
+					Current_Zone=ticketsDB[i]["Current_Zone"], Rated=ticketsDB[i]["Rated"], 
+					Event=(Movie(ID=Event[0]['ID'], Title=Event[0]['Title'], Release_date=Event[0]['Release date'], Rating=str(Event[0]['Rating']), Genre=Event[0]['Genre']))))
+			return m
 		except requests.RequestException as e:
 			copy_tickets = copy.deepcopy(ticketsDB)
 			for i in range(0, len(ticketsDB)):
-				copy_tickets[i]['Event'] = []
-			return jsonify(copy_tickets)
-	else:	
-		return jsonify(ticketsDB)
+				m.append(Ticket(ID=ticketsDB[i]["0"], Barcode=ticketsDB[i]["Barcode"], EID=ticketsDB[i]["EID"], 
+					Current_Zone=ticketsDB[i]["Current_Zone"], Rated=ticketsDB[i]["Rated"], 
+					Event=[]))
+			return m
 
-# GET information about single Ticket in JSON format
-@app.route('/tickets/<ticketID>', methods=['GET'])
-def getSingleTicket(ticketID):
-	if(request.args.get('embedded', '') == "events"):
+
+	@spyne.srpc(Unicode,_returns=Ticket)
+	def getTicket(TicketID):
 		try:
-			ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
+			ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
 			copy_tickets = copy.deepcopy(ticket)
 			url = 'http://service:81/movies'
 			movies = []
-			for EID in copy_tickets[0]['EID']:
-				r = requests.get('{}/{}'.format(url, EID))
-				r = json.loads(r.text)
-				movies.append(r)
-			copy_tickets[0]['Event'] = []
-			copy_tickets[0]['Event'].append(movies)
-			return jsonify(copy_tickets)
+			r = requests.get('{}/{}'.format(url, copy_tickets[0]['EID']))
+			Event = json.loads(r.text);
+			return Ticket(ID=copy_tickets[0]["ID"], Barcode=copy_tickets[0]["Barcode"], EID=copy_tickets[0]["EID"], 
+					Current_Zone=copy_tickets[0]["Current_Zone"], Rated=copy_tickets[0]["Rated"], 
+					Event=(Movie(ID=Event[0]['ID'], Title=Event[0]['Title'], Release_date=Event[0]['Release date'], Rating=str(Event[0]['Rating']), Genre=Event[0]['Genre'])))
 		except requests.RequestException as e:
-			copy_tickets = copy.deepcopy(ticketsDB)
-			for i in range(0, len(ticketsDB)):
-				copy_tickets[i]['Event'] = []
-			return jsonify(copy_tickets)
-	else:
-		ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	return jsonify(ticket[0])
+			ticket = [tic for tic in copy_tickets[0] (tic['ID'] == TicketID)]
+			return (Ticket(ID=copy_tickets[0]["0"], Barcode=copy_tickets[0]["Barcode"], EID=copy_tickets[0]["EID"], 
+					Current_Zone=copy_tickets[0]["Current_Zone"], Rated=copy_tickets[0]["Rated"], 
+					Event=[]))
 
-# GET information about current Event Tickets in JSON format
-@app.route('/events/<eventID>/tickets', methods=['GET'])
-def getCurrentTicketsByEvent(eventID):
-	eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == eventID)]
-	return jsonify(eventTickets)
+	@spyne.srpc(Unicode,_returns=Array(Ticket))
+	def getEventTickets(EventID):
+		EventTickets = [ tic for tic in ticketsDB if (tic['EID'] == EventID)]
+		m = []
+		for ticket in EventTickets:
+			m.append(Ticket(ID=ticket["ID"], Barcode=ticket["Barcode"], EID=ticket["EID"], Current_Zone=ticket["Current_Zone"], Rated=ticket["Rated"]))
+		return m
 
-
-# PUT a barcode to the specific Ticket ID. Id provided by URL
-@app.route('/tickets/<ticketID>', methods=['PATCH'])
-def generateTicket(ticketID):
-	randomBarcode = random.randint(10000000,100000000)
-	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	if(ticket[0]['Barcode'] == ''):
-		ticket[0]['Barcode']  = randomBarcode
-		return jsonify(ticket[0])
-	else:
-		return 'Error. Ticket has a barcode generated', 405
-
-# PUT a barcode to specific Event Tickets. Event Id provided by URL
-@app.route('/events/<eventID>/tickets', methods=['PATCH'])
-def generateEventTicket(eventID):
-	ticket = [tic for tic in ticketsDB if (tic['EID'] == eventID)]
-	for eventsTic in ticket:
-		if(eventsTic['Barcode'] == ''):
-			randomBarcode = random.randint(100000,1000000)
-			eventsTic['Barcode']  = randomBarcode
-	return jsonify(ticket)
-
-#PUT update info (only EID)
-@app.route('/tickets/<ticketID>', methods=['PUT'])
-def changeEvent(ticketID):
-	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	if (len(ticket) == 0):
-		abort(404)
-	if 'EID' in request.json:
-		ticket[0]['EID'] = request.json['EID']
-	if 'Current Zone' in request.json:
-		ticket[0]['Current Zone'] = request.json['Current Zone']
-	if 'Barcode' in request.json:
-		ticket[0]['Barcode'] = request.json['Barcode']
-	return jsonify(ticket[0])
-
-# POST - Add one Ticket to the Event. Event ID passed by JSON. Ticket ID is auto increasing.
-@app.route('/tickets', methods = ['POST'])
-def addTicket():
-	lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
-	ticket = {
-		'id': str(lastId),
-		'Barcode': '',
-		'EID' :request.json['EID'],
-		'Current Zone': '0',
-		'Rated': '0'
-	}
-	ticketsDB.append(ticket)
-	return jsonify(ticket), 201
-
-# DELETE - Remove ticket from the list.
-# Only when the barcode is not generated
-@app.route('/tickets/<ticketID>', methods = ['DELETE'])
-def deleteTicket(ticketID):
-	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	if (len(ticket) == 0):
-		abort(404)
-	if (ticket[0]['Barcode'] == ''):
-		ticketsDB.remove(ticket[0])
-		return jsonify(ticket[0]), 200
-	else:
-		return 'Error. Ticket has a barcode generated and cannot be deleted', 405
-
-#2nd TASK
-
-# GET info about all events(movies)
-@app.route('/events', methods=['GET'])
-def getEvents():
-	try:
-		r = requests.get('http://service:81/movies')
-		return r.text
-	except requests.RequestException as e:
-		print(e)
-		return str(e), 503
-	return jsonify(404)
-
-# POST - Add selected amount of tickets to the selected event. 
-#Amount of tickets, event(film) id passed by JSON. String and int
-@app.route('/events/tickets', methods = ['POST'])
-def addTicketToEvent():
-	try:
-		if(request.args.get('embedded', '') == "movie"):
-			movie = request.json['Movie']
-			numberOfTickets = request.json['TicNumber']
-			r = requests.post('http://service:81/movies', json = {"Title" : movie['Title'], "Release date" : movie['Release_date'], "Rating" : movie['Rating'], "Genre" : movie['Genre']})
-			r = json.loads(r.text)
-			for i in range(0,numberOfTickets):
-				lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
-				ticket = {
-					'id': str(lastId),
-					'Barcode': '',
-					'EID' : r['ID'],
-					'Current Zone': '0',
-					'Rated': '0'
-				}
-				ticketsDB.append(ticket)
-			eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == r['ID'])]
-			return jsonify(eventTickets), 201
+	@spyne.srpc(Unicode,_returns=Ticket)
+	def DeleteTicket(TicketID):
+		ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
+		if (len(ticket) == 0):
+			abort(404)
+		if (ticket[0]['Barcode'] == ''):
+			ticketsDB.remove(ticket[0])
+			return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"]))
 		else:
-			filmTitle = request.json['Title']
-			if(len(filmTitle) == 0):
+			raise ValueError('Error. Ticket has a barcode generated and cannot be deleted')
+
+	@spyne.srpc(Unicode(default=''),Unicode(default=''), Unicode(default=''), Unicode(default=''),_returns=Ticket)
+	def EditTicket(TicketID, EventID, Barcode, Current_Zone):
+		ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
+		if (len(ticket) == 0):
+			abort(404)
+		if (len(EventID) != 0):
+			ticket[0]['EID'] = EventID
+		if (len(Current_Zone) != 0):
+			ticket[0]['Current_Zone'] = Current_Zone
+		if (len(Barcode) != 0):
+			ticket[0]['Barcode'] = Barcode
+		return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"]))
+
+	@spyne.srpc(Unicode,_returns=Ticket)
+	def generateTicket(TicketID):
+		randomBarcode = random.randint(10000000,100000000)
+		ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
+		if(ticket[0]['Barcode'] == ''):
+			ticket[0]['Barcode']  = randomBarcode
+			return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"]))
+		else:
+			raise ValueError('Error. Ticket has a barcode generated and cannot be deleted')
+
+	@spyne.srpc(Unicode,_returns=Array(Ticket))
+	def generateEventTickets(EventID):
+		ticket = [tic for tic in ticketsDB if (tic['EID'] == EventID)]
+		m = []
+		for eventsTic in ticket:
+			if(eventsTic['Barcode'] == ''):
+				randomBarcode = random.randint(100000,1000000)
+				eventsTic['Barcode']  = randomBarcode
+				m.append(Ticket(ID=eventsTic["ID"], Barcode=eventsTic["Barcode"], EID=eventsTic["EID"], Current_Zone=eventsTic["Current_Zone"], Rated=eventsTic["Rated"]))
+		return m
+
+	@spyne.srpc(Unicode, Integer,_returns=Array(Ticket))
+	def addTicketToEvent(MovieName, NumberOfTickets):
+		try:
+			if(len(MovieName) == 0):
 				return 'Error. Title not provided or is invalid', 405
-			numberOfTickets = request.json['TicNumber']
-			if(numberOfTickets < 1):
+			if(NumberOfTickets < 1):
 				return 'Error. TicNumber not provided or is invalid', 405
-			requestData = {'title' : filmTitle}
+			requestData = {'title' : MovieName}
 			r = requests.get('http://service:81/movies', params=requestData)
 			eventID = r.json()
-			for i in range(0,numberOfTickets):
-				lastId = int(ticketsDB[len(ticketsDB) - 1]['id']) + 1
+			for i in range(0,NumberOfTickets):
+				lastId = int(ticketsDB[len(ticketsDB) - 1]['ID']) + 1
 				ticket = {
-					'id': str(lastId),
+					'ID': str(lastId),
 					'Barcode': '',
 					'EID' : eventID[0]['ID'],
-					'Current Zone': '0',
+					'Current_Zone': '0',
 					'Rated': '0'
 				}
 				ticketsDB.append(ticket)
 			eventTickets = [ tic for tic in ticketsDB if (tic['EID'] == str(eventID[0]['ID']))]
-			return jsonify(eventTickets), 201
-	except requests.RequestException as e:
-		print(e)
-		return str(e), 503
-	return jsonify(404)
+			m = []
+			for ticket in eventTickets:
+				m.append(Ticket(ID=ticket["ID"], Barcode=ticket["Barcode"], EID=ticket["EID"], Current_Zone=ticket["Current_Zone"], Rated=ticket["Rated"]))
+			return m
+		except requests.RequestException as e:
+			print(e)
+			return str(e), 503
+		return jsonify(404)
 
-# PATCH. Rate film using TicketID. TicketID and Rating passed by json (both as strings)
-@app.route('/events/rates', methods = ['PATCH'])
-def addRatingToEvent():
-	ticketID = request.json['Ticket ID']
-	ticket = [tic for tic in ticketsDB if (tic['id'] == ticketID)]
-	if(len(ticketID) == 0):
-		return 'Error. TicketID not provided or is invalid', 405
-	if(ticket[0]['Rated'] == "1"):
-		return 'Error. Ticket already participated in rating', 405
-	data = {
-		"Rating": request.json['Rating']
-	}
-	url = 'http://service:81/movies'
-	r = requests.patch('{}/{}'.format(url, ticket[0]['EID']), json=data)
-	if(r.status_code==200):
-		ticket[0]['Rated'] = "1"
-		return r.text, 200
-	return r.text, 404
+	@spyne.srpc(Unicode, Unicode,_returns=Movie)
+	def addRatingToEvent(TicketID, Rating):
+		if(len(TicketID) == 0):
+			raise ValueError('Error. TicketID not provided or is invalid')
 
+		ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
+		
+		if(ticket[0]['Rated'] == "1"):
+			raise ValueError('Error. Ticket already participated in rating')
+		data = {
+			"Rating": Rating
+		}
+		url = 'http://service:81/movies'
+		r = requests.patch('{}/{}'.format(url, ticket[0]['EID']), json=data)
+		if(r.status_code==200):
+			ticket[0]['Rated'] = "1"
+			Event =  r.json()
+			return (Movie(ID=Event['ID'], Title=Event['Title'], Release_date=Event['Release date'], Rating=str(Event['Rating']), Genre=Event['Genre']))
+		return r.text, 404
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0', port=5000)

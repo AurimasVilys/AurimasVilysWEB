@@ -14,26 +14,73 @@ Used ports are 5000 and 81
 URL: http://localhost:5000/soap/tickets?wsdl
 
 ### Queries 3RD TASK:
-0. [GET] Get all tickets with events (Embeded parameter) -> http://localhost:5000/tickets?embedded=events
-00. [GET] Get single ticket info (Embeded paramater) -> http://localhost:5000/tickets/<Ticket_ID>?embedded=events
-00. [GET] Get all events -> http://localhost:5000/events
-00. [POST] Create tickets for event ('Title' (string) and 'TicNumber' (number) passed by JSON ) -> http://localhost:5000/events/tickets
-00. [POST] Create new film and tickets using embeded parameter "movie". TicNumber, and Movie(Title,Release date, Rating, Genre) passed by JSON -> localhost:5000/events/tickets?embedded=movie
-00. [PATCH] Rate film  ('Ticket ID' and 'Rating' passed by JSON (both strings))-> http://localhost:5000/events/rates
 
-### JSON EXAMPLES
-1. For creating event tickets:
-{
-	"Title": "Alpha",
-	"TicNumber": 100
-}
-2. For creating movie and event tickets:
-{
-	"TicNumber": 100,
-	"Movie": {"Title": "Venom", "Release_date": "2018", "Rating": "Not Rated", "Genre": "Horror"}
-}
-3. For rating movie:
-{ 
-	"Ticket ID": "1",
-	"Rating": "9"
-}
+00. Add Tickets to Event
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:addTicketToEvent>
+         <tns:MovieName>Movie_1</tns:MovieName>
+         <tns:NumberOfTickets>10</tns:NumberOfTickets>
+      </tns:addTicketToEvent>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+00. Get information about ticket
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:getTicket>
+         <tns:TicketID>1</tns:TicketID>
+      </tns:getTicket>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+00. Rate event (film) by Ticket ID
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:addRatingToEvent>
+         <tns:TicketID>3</tns:TicketID>
+         <tns:Rating>5</tns:Rating>
+      </tns:addRatingToEvent>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+00. Generate barcode for ticket
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:generateEventTickets>
+         <tns:EventID>2</tns:EventID>
+      </tns:generateEventTickets>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+00. Delete ticket
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:DeleteTicket>
+         <!--Optional:-->
+         <tns:TicketID>3</tns:TicketID>
+      </tns:DeleteTicket>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+00. Change information about ticket
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:EditTicket>
+         <!--Optional:-->
+         <tns:TicketID>4</tns:TicketID>
+         <!--Optional:-->
+         <tns:EventID>3</tns:EventID>
+         <!--Optional:-->
+         <tns:Barcode>123</tns:Barcode>
+         <!--Optional:-->
+         <tns:Current_Zone>1</tns:Current_Zone>
+      </tns:EditTicket>
+   </soapenv:Body>
+</soapenv:Envelope>

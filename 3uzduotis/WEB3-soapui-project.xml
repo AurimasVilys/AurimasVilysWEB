@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="1e161a9a-18dd-4267-8d4b-49f716d5c3c2" activeEnvironment="Default" name="WEB3" resourceRoot="" soapui-version="5.4.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="bfda1e54-d588-45e0-80cd-2413038a8fcb" wsaVersion="NONE" name="TicketsService" type="wsdl" bindingName="{tns}TicketsService" soapVersion="1_1" anonymous="optional" definition="http://localhost:5000/soap/tickets?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:5000/soap/tickets?wsdl"><con:part><con:url>http://localhost:5000/soap/tickets?wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="tns" name="TicketsService" xmlns:plink="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap11enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap11env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap12enc="http://www.w3.org/2003/05/soap-encoding" xmlns:soap12env="http://www.w3.org/2003/05/soap-envelope" xmlns:tns="tns" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xop="http://www.w3.org/2004/08/xop/include" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <wsdl:types>
+    <xs:schema targetNamespace="tns" elementFormDefault="qualified">
+      <xs:complexType name="Movie">
+        <xs:sequence>
+          <xs:element name="Rating" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Title" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Release_date" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Genre" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="ID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Ticket">
+        <xs:sequence>
+          <xs:element name="Rated" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Barcode" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Current_Zone" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Event" type="tns:Movie" minOccurs="0" nillable="true"/>
+          <xs:element name="EID" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="ID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TicketArray">
+        <xs:sequence>
+          <xs:element name="Ticket" type="tns:Ticket" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTickets"/>
+      <xs:complexType name="DefaultMessage">
+        <xs:sequence>
+          <xs:element name="Message" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ConnectedString">
+        <xs:sequence>
+          <xs:element name="str" type="xs:string" minOccurs="0" default="Welcome" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DeleteTicket">
+        <xs:sequence>
+          <xs:element name="TicketID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DeleteTicketResponse">
+        <xs:sequence>
+          <xs:element name="DeleteTicketResult" type="tns:Ticket" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="EditTicket">
+        <xs:sequence>
+          <xs:element name="TicketID" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="EventID" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Barcode" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Current_Zone" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="EditTicketResponse">
+        <xs:sequence>
+          <xs:element name="EditTicketResult" type="tns:Ticket" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addRatingToEvent">
+        <xs:sequence>
+          <xs:element name="TicketID" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="Rating" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addTicketToEvent">
+        <xs:sequence>
+          <xs:element name="MovieName" type="xs:string" minOccurs="0" nillable="true"/>
+          <xs:element name="NumberOfTickets" type="xs:integer" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="generateEventTickets">
+        <xs:sequence>
+          <xs:element name="EventID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="generateEventTicketsResponse">
+        <xs:sequence>
+          <xs:element name="generateEventTicketsResult" type="tns:TicketArray" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="generateTicket">
+        <xs:sequence>
+          <xs:element name="TicketID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="generateTicketResponse">
+        <xs:sequence>
+          <xs:element name="generateTicketResult" type="tns:Ticket" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getEventTickets">
+        <xs:sequence>
+          <xs:element name="EventID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getEventTicketsResponse">
+        <xs:sequence>
+          <xs:element name="getEventTicketsResult" type="tns:TicketArray" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTicket">
+        <xs:sequence>
+          <xs:element name="TicketID" type="xs:string" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTicketResponse">
+        <xs:sequence>
+          <xs:element name="getTicketResult" type="tns:Ticket" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getTicketsResponse">
+        <xs:sequence>
+          <xs:element name="getTicketsResult" type="tns:TicketArray" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ConnectedStringResponse">
+        <xs:sequence>
+          <xs:element name="ConnectedStringResult" type="tns:DefaultMessage" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addRatingToEventResponse">
+        <xs:sequence>
+          <xs:element name="addRatingToEventResult" type="tns:Movie" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addTicketToEventResponse">
+        <xs:sequence>
+          <xs:element name="addTicketToEventResult" type="tns:TicketArray" minOccurs="0" nillable="true"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Movie" type="tns:Movie"/>
+      <xs:element name="Ticket" type="tns:Ticket"/>
+      <xs:element name="TicketArray" type="tns:TicketArray"/>
+      <xs:element name="getTickets" type="tns:getTickets"/>
+      <xs:element name="DefaultMessage" type="tns:DefaultMessage"/>
+      <xs:element name="ConnectedString" type="tns:ConnectedString"/>
+      <xs:element name="DeleteTicket" type="tns:DeleteTicket"/>
+      <xs:element name="DeleteTicketResponse" type="tns:DeleteTicketResponse"/>
+      <xs:element name="EditTicket" type="tns:EditTicket"/>
+      <xs:element name="EditTicketResponse" type="tns:EditTicketResponse"/>
+      <xs:element name="addRatingToEvent" type="tns:addRatingToEvent"/>
+      <xs:element name="addTicketToEvent" type="tns:addTicketToEvent"/>
+      <xs:element name="generateEventTickets" type="tns:generateEventTickets"/>
+      <xs:element name="generateEventTicketsResponse" type="tns:generateEventTicketsResponse"/>
+      <xs:element name="generateTicket" type="tns:generateTicket"/>
+      <xs:element name="generateTicketResponse" type="tns:generateTicketResponse"/>
+      <xs:element name="getEventTickets" type="tns:getEventTickets"/>
+      <xs:element name="getEventTicketsResponse" type="tns:getEventTicketsResponse"/>
+      <xs:element name="getTicket" type="tns:getTicket"/>
+      <xs:element name="getTicketResponse" type="tns:getTicketResponse"/>
+      <xs:element name="getTicketsResponse" type="tns:getTicketsResponse"/>
+      <xs:element name="ConnectedStringResponse" type="tns:ConnectedStringResponse"/>
+      <xs:element name="addRatingToEventResponse" type="tns:addRatingToEventResponse"/>
+      <xs:element name="addTicketToEventResponse" type="tns:addTicketToEventResponse"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="addTicketToEvent">
+    <wsdl:part name="addTicketToEvent" element="tns:addTicketToEvent"/>
+  </wsdl:message>
+  <wsdl:message name="addTicketToEventResponse">
+    <wsdl:part name="addTicketToEventResponse" element="tns:addTicketToEventResponse"/>
+  </wsdl:message>
+  <wsdl:message name="getTickets">
+    <wsdl:part name="getTickets" element="tns:getTickets"/>
+  </wsdl:message>
+  <wsdl:message name="getTicketsResponse">
+    <wsdl:part name="getTicketsResponse" element="tns:getTicketsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="generateEventTickets">
+    <wsdl:part name="generateEventTickets" element="tns:generateEventTickets"/>
+  </wsdl:message>
+  <wsdl:message name="generateEventTicketsResponse">
+    <wsdl:part name="generateEventTicketsResponse" element="tns:generateEventTicketsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="DeleteTicket">
+    <wsdl:part name="DeleteTicket" element="tns:DeleteTicket"/>
+  </wsdl:message>
+  <wsdl:message name="DeleteTicketResponse">
+    <wsdl:part name="DeleteTicketResponse" element="tns:DeleteTicketResponse"/>
+  </wsdl:message>
+  <wsdl:message name="addRatingToEvent">
+    <wsdl:part name="addRatingToEvent" element="tns:addRatingToEvent"/>
+  </wsdl:message>
+  <wsdl:message name="addRatingToEventResponse">
+    <wsdl:part name="addRatingToEventResponse" element="tns:addRatingToEventResponse"/>
+  </wsdl:message>
+  <wsdl:message name="getTicket">
+    <wsdl:part name="getTicket" element="tns:getTicket"/>
+  </wsdl:message>
+  <wsdl:message name="getTicketResponse">
+    <wsdl:part name="getTicketResponse" element="tns:getTicketResponse"/>
+  </wsdl:message>
+  <wsdl:message name="ConnectedString">
+    <wsdl:part name="ConnectedString" element="tns:ConnectedString"/>
+  </wsdl:message>
+  <wsdl:message name="ConnectedStringResponse">
+    <wsdl:part name="ConnectedStringResponse" element="tns:ConnectedStringResponse"/>
+  </wsdl:message>
+  <wsdl:message name="generateTicket">
+    <wsdl:part name="generateTicket" element="tns:generateTicket"/>
+  </wsdl:message>
+  <wsdl:message name="generateTicketResponse">
+    <wsdl:part name="generateTicketResponse" element="tns:generateTicketResponse"/>
+  </wsdl:message>
+  <wsdl:message name="getEventTickets">
+    <wsdl:part name="getEventTickets" element="tns:getEventTickets"/>
+  </wsdl:message>
+  <wsdl:message name="getEventTicketsResponse">
+    <wsdl:part name="getEventTicketsResponse" element="tns:getEventTicketsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="EditTicket">
+    <wsdl:part name="EditTicket" element="tns:EditTicket"/>
+  </wsdl:message>
+  <wsdl:message name="EditTicketResponse">
+    <wsdl:part name="EditTicketResponse" element="tns:EditTicketResponse"/>
+  </wsdl:message>
+  <wsdl:service name="TicketsService">
+    <wsdl:port name="TicketsService" binding="tns:TicketsService">
+      <soap:address location="http://localhost:5000/soap/tickets"/>
+    </wsdl:port>
+  </wsdl:service>
+  <wsdl:portType name="TicketsService">
+    <wsdl:operation name="addTicketToEvent" parameterOrder="addTicketToEvent">
+      <wsdl:input name="addTicketToEvent" message="tns:addTicketToEvent"/>
+      <wsdl:output name="addTicketToEventResponse" message="tns:addTicketToEventResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getTickets" parameterOrder="getTickets">
+      <wsdl:input name="getTickets" message="tns:getTickets"/>
+      <wsdl:output name="getTicketsResponse" message="tns:getTicketsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="generateEventTickets" parameterOrder="generateEventTickets">
+      <wsdl:input name="generateEventTickets" message="tns:generateEventTickets"/>
+      <wsdl:output name="generateEventTicketsResponse" message="tns:generateEventTicketsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteTicket" parameterOrder="DeleteTicket">
+      <wsdl:input name="DeleteTicket" message="tns:DeleteTicket"/>
+      <wsdl:output name="DeleteTicketResponse" message="tns:DeleteTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="addRatingToEvent" parameterOrder="addRatingToEvent">
+      <wsdl:input name="addRatingToEvent" message="tns:addRatingToEvent"/>
+      <wsdl:output name="addRatingToEventResponse" message="tns:addRatingToEventResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getTicket" parameterOrder="getTicket">
+      <wsdl:input name="getTicket" message="tns:getTicket"/>
+      <wsdl:output name="getTicketResponse" message="tns:getTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="ConnectedString" parameterOrder="ConnectedString">
+      <wsdl:input name="ConnectedString" message="tns:ConnectedString"/>
+      <wsdl:output name="ConnectedStringResponse" message="tns:ConnectedStringResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="generateTicket" parameterOrder="generateTicket">
+      <wsdl:input name="generateTicket" message="tns:generateTicket"/>
+      <wsdl:output name="generateTicketResponse" message="tns:generateTicketResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getEventTickets" parameterOrder="getEventTickets">
+      <wsdl:input name="getEventTickets" message="tns:getEventTickets"/>
+      <wsdl:output name="getEventTicketsResponse" message="tns:getEventTicketsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="EditTicket" parameterOrder="EditTicket">
+      <wsdl:input name="EditTicket" message="tns:EditTicket"/>
+      <wsdl:output name="EditTicketResponse" message="tns:EditTicketResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TicketsService" type="tns:TicketsService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="addTicketToEvent">
+      <soap:operation soapAction="addTicketToEvent" style="document"/>
+      <wsdl:input name="addTicketToEvent">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addTicketToEventResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTickets">
+      <soap:operation soapAction="getTickets" style="document"/>
+      <wsdl:input name="getTickets">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getTicketsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="generateEventTickets">
+      <soap:operation soapAction="generateEventTickets" style="document"/>
+      <wsdl:input name="generateEventTickets">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="generateEventTicketsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteTicket">
+      <soap:operation soapAction="DeleteTicket" style="document"/>
+      <wsdl:input name="DeleteTicket">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DeleteTicketResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addRatingToEvent">
+      <soap:operation soapAction="addRatingToEvent" style="document"/>
+      <wsdl:input name="addRatingToEvent">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addRatingToEventResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTicket">
+      <soap:operation soapAction="getTicket" style="document"/>
+      <wsdl:input name="getTicket">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getTicketResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConnectedString">
+      <soap:operation soapAction="ConnectedString" style="document"/>
+      <wsdl:input name="ConnectedString">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ConnectedStringResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="generateTicket">
+      <soap:operation soapAction="generateTicket" style="document"/>
+      <wsdl:input name="generateTicket">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="generateTicketResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEventTickets">
+      <soap:operation soapAction="getEventTickets" style="document"/>
+      <wsdl:input name="getEventTickets">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getEventTicketsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EditTicket">
+      <soap:operation soapAction="EditTicket" style="document"/>
+      <wsdl:input name="EditTicket">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="EditTicketResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint></con:endpoints><con:operation id="9342b7ed-bd56-4b57-89e2-d4a2d7288e3a" isOneWay="false" action="addTicketToEvent" name="addTicketToEvent" bindingOperationName="addTicketToEvent" type="Request-Response" outputName="addTicketToEventResponse" inputName="addTicketToEvent" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f0490b54-41ec-4a3b-b60e-74b66e6979eb" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:addTicketToEvent>
+         <tns:MovieName>Movie_1</tns:MovieName>
+         <tns:NumberOfTickets>10</tns:NumberOfTickets>
+      </tns:addTicketToEvent>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="addTicketToEvent"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="87cfef97-2704-4c30-b0f1-769fb6976635" isOneWay="false" action="ConnectedString" name="ConnectedString" bindingOperationName="ConnectedString" type="Request-Response" outputName="ConnectedStringResponse" inputName="ConnectedString" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ac2905df-1587-43a5-9f44-ddf5ac7b4541" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:ConnectedString>
+         <!--Optional:-->
+
+      </tns:ConnectedString>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="ConnectedString"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="45bc6203-e249-47a7-80cd-771020300175" isOneWay="false" action="getTicket" name="getTicket" bindingOperationName="getTicket" type="Request-Response" outputName="getTicketResponse" inputName="getTicket" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f2689922-b0ad-437c-94f9-2523c047e8bb" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:getTicket>
+         <tns:TicketID>1</tns:TicketID>
+      </tns:getTicket>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="getTicket"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="0fb8c63f-b5d1-4699-89b9-64bbeb85b363" isOneWay="false" action="getTickets" name="getTickets" bindingOperationName="getTickets" type="Request-Response" outputName="getTicketsResponse" inputName="getTickets" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6858eb61-270c-4208-b628-d39d852a9bed" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:getTickets/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="getTickets"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="9f46512c-f30a-4517-9049-e4ac71de16b1" isOneWay="false" action="addRatingToEvent" name="addRatingToEvent" bindingOperationName="addRatingToEvent" type="Request-Response" outputName="addRatingToEventResponse" inputName="addRatingToEvent" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3029931d-37a9-4dd5-bbfc-dc6ab777d1ba" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:addRatingToEvent>
+         <!--Optional:-->
+         <tns:TicketID>3</tns:TicketID>
+         <tns:Rating>5</tns:Rating>
+      </tns:addRatingToEvent>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="addRatingToEvent"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="cfb960c7-f38d-46eb-be3a-6d21ba39f9a8" isOneWay="false" action="getEventTickets" name="getEventTickets" bindingOperationName="getEventTickets" type="Request-Response" outputName="getEventTicketsResponse" inputName="getEventTickets" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="964fce2b-e2d5-4c8f-9ef0-6d93589971c5" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:getEventTickets>
+         <!--Optional:-->
+         <tns:EventID>1</tns:EventID>
+      </tns:getEventTickets>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="getEventTickets"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="568896be-acab-41d4-8cd7-979a19c52970" isOneWay="false" action="generateEventTickets" name="generateEventTickets" bindingOperationName="generateEventTickets" type="Request-Response" outputName="generateEventTicketsResponse" inputName="generateEventTickets" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2776adb4-950b-4a74-b537-fdc00cacde46" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:generateEventTickets>
+         <tns:EventID>2</tns:EventID>
+      </tns:generateEventTickets>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="generateEventTickets"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="bc8f04a5-e3f1-4fc5-a5b1-144855e02e71" isOneWay="false" action="generateTicket" name="generateTicket" bindingOperationName="generateTicket" type="Request-Response" outputName="generateTicketResponse" inputName="generateTicket" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d0781b9f-7e68-4eb9-b84f-980b655ce4d3" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:generateTicket>
+         <!--Optional:-->
+         <tns:TicketID>5</tns:TicketID>
+      </tns:generateTicket>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="generateTicket"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="bd20123b-8cf6-4b7a-b45b-77c8d6a2d61e" isOneWay="false" action="DeleteTicket" name="DeleteTicket" bindingOperationName="DeleteTicket" type="Request-Response" outputName="DeleteTicketResponse" inputName="DeleteTicket" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1e113a52-8f54-4ca1-b81f-0fcb3079d050" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:DeleteTicket>
+         <!--Optional:-->
+         <tns:TicketID>3</tns:TicketID>
+      </tns:DeleteTicket>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="DeleteTicket"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="e22ba41c-d765-4d7e-8709-66586e645d8d" isOneWay="false" action="EditTicket" name="EditTicket" bindingOperationName="EditTicket" type="Request-Response" outputName="EditTicketResponse" inputName="EditTicket" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="4c5e6263-f7b7-45af-a7bc-b8fa30170abf" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:5000/soap/tickets</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="tns">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:EditTicket>
+         <!--Optional:-->
+         <tns:TicketID>4</tns:TicketID>
+         <!--Optional:-->
+         <tns:EventID>3</tns:EventID>
+         <!--Optional:-->
+         <tns:Barcode>123</tns:Barcode>
+         <!--Optional:-->
+         <tns:Current_Zone>1</tns:Current_Zone>
+      </tns:EditTicket>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="EditTicket"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

@@ -18,9 +18,9 @@ app = Flask(__name__)
 spyne = Spyne(app)
 
 ticketsDB = [
-	{'ID' : '1', 'Barcode' : '78355256', 'EID' : '3', 'Current_Zone' : '0', 'Rated': '0'},
-	{'ID' : '2', 'Barcode' : '', 'EID' : '5', 'Current_Zone' : '0', 'Rated': '0'},
-	{'ID' : '3', 'Barcode' : '', 'EID' : '1', 'Current_Zone' : '0', 'Rated': '0'},
+	{'ID' : '1', 'Barcode' : '78355256', 'EID' : '3', 'Current_Zone' : '1', 'Rated': '0'},
+	{'ID' : '2', 'Barcode' : '', 'EID' : '5', 'Current_Zone' : '1', 'Rated': '0'},
+	{'ID' : '3', 'Barcode' : '', 'EID' : '1', 'Current_Zone' : '1', 'Rated': '0'},
 	{'ID' : '4', 'Barcode' : '', 'EID' : '6', 'Current_Zone' : '0', 'Rated': '0'},
 	{'ID' : '5', 'Barcode' : '', 'EID' : '3', 'Current_Zone' : '0', 'Rated': '0'},
 	{'ID' : '6', 'Barcode' : '', 'EID' : '2', 'Current_Zone' : '0', 'Rated': '0'},
@@ -67,7 +67,6 @@ class TicketsService(spyne.Service):
 	def getTickets():
 		m = []
 		try:
-			copy_tickets = copy.deepcopy(ticketsDB)
 			url = 'http://service:81/movies'
 			for i in range(0, len(ticketsDB)):
 				r = requests.get('{}/{}'.format(url, ticketsDB[i]['EID']))
@@ -77,9 +76,8 @@ class TicketsService(spyne.Service):
 					Event=(Movie(ID=Event[0]['ID'], Title=Event[0]['Title'], Release_date=Event[0]['Release date'], Rating=str(Event[0]['Rating']), Genre=Event[0]['Genre']))))
 			return m
 		except requests.RequestException as e:
-			copy_tickets = copy.deepcopy(ticketsDB)
 			for i in range(0, len(ticketsDB)):
-				m.append(Ticket(ID=ticketsDB[i]["0"], Barcode=ticketsDB[i]["Barcode"], EID=ticketsDB[i]["EID"], 
+				m.append(Ticket(ID=ticketsDB[i]["ID"], Barcode=ticketsDB[i]["Barcode"], EID=ticketsDB[i]["EID"], 
 					Current_Zone=ticketsDB[i]["Current_Zone"], Rated=ticketsDB[i]["Rated"], 
 					Event=[]))
 			return m
@@ -98,9 +96,9 @@ class TicketsService(spyne.Service):
 					Current_Zone=copy_tickets[0]["Current_Zone"], Rated=copy_tickets[0]["Rated"], 
 					Event=(Movie(ID=Event[0]['ID'], Title=Event[0]['Title'], Release_date=Event[0]['Release date'], Rating=str(Event[0]['Rating']), Genre=Event[0]['Genre'])))
 		except requests.RequestException as e:
-			ticket = [tic for tic in copy_tickets[0] (tic['ID'] == TicketID)]
-			return (Ticket(ID=copy_tickets[0]["0"], Barcode=copy_tickets[0]["Barcode"], EID=copy_tickets[0]["EID"], 
-					Current_Zone=copy_tickets[0]["Current_Zone"], Rated=copy_tickets[0]["Rated"], 
+			ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
+			return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], 
+					Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"], 
 					Event=[]))
 
 	@spyne.srpc(Unicode,_returns=Array(Ticket))
@@ -122,7 +120,7 @@ class TicketsService(spyne.Service):
 		else:
 			raise Fault(faultcode='Client', faultstring='NotAllowed', faultactor='', detail={'Message':'Error Ticket has a barcode generated and cannot be deleted'})
 
-	@spyne.srpc(Unicode(default=''),Unicode(default=''), Unicode(default=''), Unicode(default=''),_returns=Ticket)
+	@spyne.srpc(Unicode,Unicode(default=''), Unicode(default=''), Unicode(default=''),_returns=Ticket)
 	def EditTicket(TicketID, EventID, Barcode, Current_Zone):
 		ticket = [tic for tic in ticketsDB if (tic['ID'] == TicketID)]
 		if (len(ticket) == 0):

@@ -28,17 +28,17 @@ ticketsDB = [
 ]
 
 
-class DefaultMessage(ComplexModel, Fault):
+class DefaultMessage(ComplexModel):
 	Message = Unicode
 
-class Movie(ComplexModel, Fault):
+class Movie(ComplexModel):
 	ID = Unicode
 	Title = Unicode
 	Release_date = Unicode
 	Rating = Unicode
 	Genre = Unicode
 
-class Ticket(ComplexModel, Fault):
+class Ticket(ComplexModel):
 	ID = Unicode
 	Barcode = Unicode
 	EID = Unicode
@@ -46,7 +46,7 @@ class Ticket(ComplexModel, Fault):
 	Current_Zone = Unicode
 	Rated = Unicode
 
-class Tickets(ComplexModel, Fault):
+class Tickets(ComplexModel):
 	tickets = Array(Ticket)
 
 class TicketsService(spyne.Service):

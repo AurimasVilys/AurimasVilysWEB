@@ -6,6 +6,8 @@ from flask_spyne import Spyne
 from spyne.protocol.soap import Soap11
 from spyne.model.primitive import Unicode, Integer
 from spyne.model.complex import Iterable, Array, ComplexModel
+from spyne.model.fault import Fault
+
 import requests
 import json
 import os
@@ -25,17 +27,18 @@ ticketsDB = [
 	{'ID' : '7', 'Barcode' : '', 'EID' : '2', 'Current_Zone' : '0', 'Rated': '0'}
 ]
 
-class DefaultMessage(ComplexModel):
+
+class DefaultMessage(ComplexModel, Fault):
 	Message = Unicode
 
-class Movie(ComplexModel):
+class Movie(ComplexModel, Fault):
 	ID = Unicode
 	Title = Unicode
 	Release_date = Unicode
 	Rating = Unicode
 	Genre = Unicode
 
-class Ticket(ComplexModel):
+class Ticket(ComplexModel, Fault):
 	ID = Unicode
 	Barcode = Unicode
 	EID = Unicode
@@ -43,7 +46,7 @@ class Ticket(ComplexModel):
 	Current_Zone = Unicode
 	Rated = Unicode
 
-class Tickets(ComplexModel):
+class Tickets(ComplexModel, Fault):
 	tickets = Array(Ticket)
 
 class TicketsService(spyne.Service):
@@ -117,7 +120,7 @@ class TicketsService(spyne.Service):
 			ticketsDB.remove(ticket[0])
 			return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"]))
 		else:
-			raise ValueError('Error. Ticket has a barcode generated and cannot be deleted')
+			raise Fault(faultcode='Client', faultstring='NotAllowed', faultactor='', detail={'Message':'Error Ticket has a barcode generated and cannot be deleted'})
 
 	@spyne.srpc(Unicode(default=''),Unicode(default=''), Unicode(default=''), Unicode(default=''),_returns=Ticket)
 	def EditTicket(TicketID, EventID, Barcode, Current_Zone):
@@ -140,7 +143,7 @@ class TicketsService(spyne.Service):
 			ticket[0]['Barcode']  = randomBarcode
 			return (Ticket(ID=ticket[0]["ID"], Barcode=ticket[0]["Barcode"], EID=ticket[0]["EID"], Current_Zone=ticket[0]["Current_Zone"], Rated=ticket[0]["Rated"]))
 		else:
-			raise ValueError('Error. Ticket has a barcode generated and cannot be deleted')
+			raise Fault(faultcode='Client', faultstring='NotAllowed', faultactor='', detail={'Message':'Error Ticket has a barcode generated and cannot be created'})
 
 	@spyne.srpc(Unicode,_returns=Array(Ticket))
 	def generateEventTickets(EventID):
@@ -157,9 +160,9 @@ class TicketsService(spyne.Service):
 	def addTicketToEvent(MovieName, NumberOfTickets):
 		try:
 			if(len(MovieName) == 0):
-				return 'Error. Title not provided or is invalid', 405
+				raise Fault(faultcode='Client', faultstring='', faultactor='', detail={'Message':'Error. Title not provided or is invalid'})
 			if(NumberOfTickets < 1):
-				return 'Error. TicNumber not provided or is invalid', 405
+				raise Fault(faultcode='Client', faultstring='', faultactor='', detail={'Error. TicNumber not provided or is invalid'})
 			requestData = {'title' : MovieName}
 			r = requests.get('http://service:81/movies', params=requestData)
 			eventID = r.json()
@@ -179,9 +182,7 @@ class TicketsService(spyne.Service):
 				m.append(Ticket(ID=ticket["ID"], Barcode=ticket["Barcode"], EID=ticket["EID"], Current_Zone=ticket["Current_Zone"], Rated=ticket["Rated"]))
 			return m
 		except requests.RequestException as e:
-			print(e)
-			return str(e), 503
-		return jsonify(404)
+			raise Fault(faultcode='503', faultstring='', faultactor='', detail={'Message':str(e)})
 
 	@spyne.srpc(Unicode, Unicode,_returns=Movie)
 	def addRatingToEvent(TicketID, Rating):
@@ -201,7 +202,6 @@ class TicketsService(spyne.Service):
 			ticket[0]['Rated'] = "1"
 			Event =  r.json()
 			return (Movie(ID=Event['ID'], Title=Event['Title'], Release_date=Event['Release date'], Rating=str(Event['Rating']), Genre=Event['Genre']))
-		return r.text, 404
 
 if __name__ == "__main__":
 	app.run(debug=True, host='0.0.0.0', port=5000)
